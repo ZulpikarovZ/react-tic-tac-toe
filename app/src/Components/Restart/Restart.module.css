@@ -1,0 +1,16 @@
+.restartBtn {
+	font-family: 'Roboto', sans-serif;
+	font-size: 36px;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.3);
+}
+
+.restartBtn:hover {
+	opacity: 0.8;
+}
+
+.restartBtn:active {
+	opacity: 0.5;
+}

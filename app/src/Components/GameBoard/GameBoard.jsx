@@ -4,34 +4,11 @@ import { Board } from '../Board/Board';
 import { GameInfo } from '../GameInfo/GameInfo';
 
 export const GameBoard = () => {
-	const [squares, setSquares] = useState(Array(9).fill(null));
+	const TOTAL_SQUARES = 9;
+	const [squares, setSquares] = useState(Array(TOTAL_SQUARES).fill(null));
 	const [isXMove, setIsXMove] = useState(true);
-	const [draw, setDraw] = useState('');
-	let isDraw = [];
-	let info = '';
 
-	info = getWinner(squares)
-		? `${getWinner(squares)} Wins!`
-		: isXMove
-		? 'Mr.X ☺ turn'
-		: 'Sub.O ☻ turn';
-
-	const handleClick = (index) => {
-		if (squares[index] || getWinner(squares)) {
-			return;
-		}
-
-		const copySquares = [...squares];
-		isXMove ? (copySquares[index] = 'X') : (copySquares[index] = 'O');
-
-		setSquares(copySquares);
-		setIsXMove((prev) => !prev);
-
-		isDraw = copySquares.filter((el) => el === 'X' || el === 'O');
-		isDraw.length === squares.length ? setDraw('Is draw!') : setDraw('');
-	};
-
-	function getWinner(squares) {
+	const getWinner = (squares) => {
 		const winCombinations = [
 			[0, 1, 2],
 			[3, 4, 5],
@@ -49,17 +26,37 @@ export const GameBoard = () => {
 			}
 		}
 		return null;
-	}
+	};
+
+	const winner = getWinner(squares);
+	const isDraw = squares.filter((el) => el).length === TOTAL_SQUARES;
+	const info = winner
+		? `${winner} Wins!`
+		: isDraw
+		? 'Is draw!'
+		: isXMove
+		? 'Mr.X ☺ turn'
+		: 'Sub.O ☻ turn';
+
+	const handleClick = (index) => {
+		if (squares[index] || winner) {
+			return;
+		}
+
+		const copySquares = [...squares];
+		copySquares[index] = isXMove ? 'X' : 'O';
+		setSquares(copySquares);
+		setIsXMove((prev) => !prev);
+	};
 
 	const restartHandler = () => {
-		setSquares(Array(9).fill(null));
+		setSquares(Array(TOTAL_SQUARES).fill(null));
 		setIsXMove(true);
-		setDraw('');
 	};
 
 	return (
 		<>
-			<GameInfo draw={draw} info={info} />
+			<GameInfo info={info} />
 			<Board squares={squares} handleClick={handleClick} />
 			<Restart restartHandler={restartHandler} />
 		</>

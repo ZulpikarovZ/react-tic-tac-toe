@@ -1,14 +1,16 @@
-import { useState } from 'react';
 import { Restart } from '../Restart/Restart';
 import { Board } from '../Board/Board';
 import { GameInfo } from '../GameInfo/GameInfo';
+import { TOTAL_SQUARES } from '../../constants';
+import { store } from '../../redux/store';
+import { CHANGE_TURN, MAKE_A_MOVE, RESTART_A_BOARD } from '../../redux/actions';
+import { useGetStateFromRedux } from '../../hooks/get-state-from-redux';
 
 export const GameBoard = () => {
-	const TOTAL_SQUARES = 9;
-	const [squares, setSquares] = useState(Array(TOTAL_SQUARES).fill(null));
-	const [isXMove, setIsXMove] = useState(true);
+	const { state, refreshStore } = useGetStateFromRedux();
+	const { squares, isXTurn } = state;
 
-	const getWinner = (squares) => {
+	const getWinner = (cells) => {
 		const winCombinations = [
 			[0, 1, 2],
 			[3, 4, 5],
@@ -21,8 +23,8 @@ export const GameBoard = () => {
 		];
 		for (let i = 0; i < winCombinations.length; i++) {
 			const [a, b, c] = winCombinations[i];
-			if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-				return squares[a];
+			if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+				return cells[a];
 			}
 		}
 		return null;
@@ -34,7 +36,7 @@ export const GameBoard = () => {
 		? `${winner} Wins!`
 		: isDraw
 		? 'Is draw!'
-		: isXMove
+		: isXTurn
 		? 'Mr.X ☺ turn'
 		: 'Sub.O ☻ turn';
 
@@ -44,14 +46,15 @@ export const GameBoard = () => {
 		}
 
 		const copySquares = [...squares];
-		copySquares[index] = isXMove ? 'X' : 'O';
-		setSquares(copySquares);
-		setIsXMove((prev) => !prev);
+		copySquares[index] = isXTurn ? 'X' : 'O';
+		store.dispatch({ type: MAKE_A_MOVE, payload: copySquares });
+		store.dispatch({ type: CHANGE_TURN, payload: isXTurn });
+		refreshStore();
 	};
 
 	const restartHandler = () => {
-		setSquares(Array(TOTAL_SQUARES).fill(null));
-		setIsXMove(true);
+		store.dispatch({ type: RESTART_A_BOARD });
+		refreshStore();
 	};
 
 	return (

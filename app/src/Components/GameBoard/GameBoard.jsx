@@ -2,13 +2,14 @@ import { Restart } from '../Restart/Restart';
 import { Board } from '../Board/Board';
 import { GameInfo } from '../GameInfo/GameInfo';
 import { TOTAL_SQUARES } from '../../constants';
-import { store } from '../../redux/store';
-import { CHANGE_TURN, MAKE_A_MOVE, RESTART_A_BOARD } from '../../redux/actions';
-import { useGetStateFromRedux } from '../../hooks/get-state-from-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { squaresSelector, turnSelector } from '../../redux/selectors/selectors';
+import { changeTurn, makeAMove, resetATurn, restartABoard } from '../../redux/actionCreators/actionCreators';
 
 export const GameBoard = () => {
-	const { state, refreshStore } = useGetStateFromRedux();
-	const { squares, isXTurn } = state;
+	const squares = useSelector(squaresSelector);
+	const isXTurn = useSelector(turnSelector);
+	const dispatch = useDispatch();
 
 	const getWinner = (cells) => {
 		const winCombinations = [
@@ -47,14 +48,13 @@ export const GameBoard = () => {
 
 		const copySquares = [...squares];
 		copySquares[index] = isXTurn ? 'X' : 'O';
-		store.dispatch({ type: MAKE_A_MOVE, payload: copySquares });
-		store.dispatch({ type: CHANGE_TURN, payload: isXTurn });
-		refreshStore();
+		dispatch(makeAMove(copySquares));
+		dispatch(changeTurn(isXTurn));
 	};
 
 	const restartHandler = () => {
-		store.dispatch({ type: RESTART_A_BOARD });
-		refreshStore();
+		dispatch(restartABoard());
+		dispatch(resetATurn())
 	};
 
 	return (

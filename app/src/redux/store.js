@@ -1,17 +1,4 @@
-import { GET_SQUARES } from './actions';
-import { appReducer } from './reducer';
+import { rootReducer } from './reducers/rootReducer';
+import { createStore } from 'redux';
 
-const createStore = (reducer) => {
-	let state;
-
-	return {
-		dispatch: (action) => {
-			state = reducer(state, action);
-		},
-		getState: () => state,
-	};
-};
-
-export const store = createStore(appReducer);
-
-store.dispatch({ type: GET_SQUARES });
+export const store = createStore(rootReducer);
